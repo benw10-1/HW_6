@@ -2935,7 +2935,7 @@ function getCurrentLocation() {
 
 
 function getWeatherData(city, country=false, state=false) {
-    const geo = "http://api.openweathermap.org/geo/1.0/direct?q={0}{1}{2}&limit=5&appid={3}".format(city, country ? country : "", state ? state : "", api_key)
+    const geo = "https://api.openweathermap.org/geo/1.0/direct?q={0}{1}{2}&limit=5&appid={3}".format(city, country ? country : "", state ? state : "", api_key)
 
     fetch(geo).then(result => {
         return result.json()
