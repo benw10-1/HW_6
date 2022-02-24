@@ -1,0 +1,48 @@
+html {
+    height: 100vh;
+    width: 100vw;
+    /* overflow: auto; */
+}
+body {
+    height: 100%;
+    width: 100%;
+}
+header {
+    height: 4em;
+    width: 100%;
+    background-color: aqua;
+}
+
+#search {
+    width: 80%;
+    height: 1.5em;
+    padding-top: .5em;
+    padding-left: .25em;
+    /* padding-bottom: .25em; */
+    font-size: 1em;
+    background-color: black;
+    color: wheat;
+    overflow: hidden;
+}
+
+.searches {
+    width: 20%;
+    text-align: center;
+    height: 100%;
+    background-color: blue;
+}
+
+.section-header {
+    padding: 20px 0;
+    display: flex;
+    justify-content: center;
+    background-color: wheat;
+}
+
+.search-history {
+    overflow: auto;
+}
+
+.cols {
+    height: calc(100% - 5.5em);
+}
