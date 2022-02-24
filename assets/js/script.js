@@ -1,14 +1,9 @@
 window.onload = () => {
-    search = document.getElementById("search")
-
-    search.addEventListener("keyup", event => {
-        if (event.key === "Enter") event.preventDefault()
-    })
-
+    loadEls()
     loadIcons()
 
     generateMap()
-
+    
     fetch('https://ipapi.co/json/').then(result => {
         return result.json()
     }).then(data => {
@@ -36,12 +31,11 @@ window.onload = () => {
             }
         }
 
-        else [city, region_code, country, latitude, longitude] = [data.city, data.region_code, data.country, data.latitude, data.longitude]
+        [city, region_code, country, latitude, longitude] = [data.city, data.region_code, data.country, data.latitude, data.longitude]
 
         return data
     }).then(data => {
-        getLocationData(data.city + ", " + data.state ?? data.country).then(data => {
-
-        })
+        search.innerHTML = data.city + ", " + data.region_code
+        searchLocation(data.city + ", " + data.region_code)
     })
 }

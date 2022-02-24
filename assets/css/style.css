@@ -1,11 +1,12 @@
 html {
     height: 100vh;
     width: 100vw;
-    /* overflow: auto; */
 }
 body {
     height: 100%;
     width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 header {
     height: 4em;
@@ -26,10 +27,11 @@ header {
 }
 
 .searches {
-    width: 20%;
+    width: 50%;
     text-align: center;
-    height: 100%;
+    height: 75%;
     background-color: blue;
+    margin: 0 30px;
 }
 
 .section-header {
@@ -43,6 +45,61 @@ header {
     overflow: auto;
 }
 
+.map {
+    width: 300px;
+    height: 300px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    padding: 10px;
+    margin: 0 30px;
+    background-color: white;
+}
+.map-container {
+    height: fit-content;
+    width: fit-content;
+}
+
+.rows, .cols {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
 .cols {
-    height: calc(100% - 5.5em);
+    flex-direction: row;
+}
+
+.rows {
+    flex-direction: column;
+}
+
+.weekly {
+    width: 100%;
+    height: 400px;
+    margin-bottom: 30px;
+}
+
+#weekly {
+    justify-content: space-around;
+    align-items: flex-start;
+}
+
+.current {
+    width: 100%;
+    height: 320px;
+    border: 2px solid blue;
+    padding: 10px;
+}
+
+.header {
+    font-size: 2em;
+    font-weight: bolder;
+}
+
+img {
+    position: absolute;
+    width: 1em;
+    height: 1em;
+    transform: scale(1.5);
 }

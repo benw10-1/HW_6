@@ -11,12 +11,14 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.12.0/css/ol.css" type="text/css">
     <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.12.0/build/ol.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 
     <script src="assets/js/base.js"></script>
     <script src="assets/js/script.js"></script>
 </head>
 <body>
-    <header>
+    <header class="header">
         <h1>My guy</h1>
     </header>
     <div class="cols">
@@ -24,20 +26,31 @@
             <div class="section-header">
                 <div contenteditable id="search"></input>
             </div>
-            <div class="search-history">
-    
+            <section class="search-history" id="search-history">
+                
+            </section>
+        </section>
+        <div class="rows">
+            <div class="cols">
+                <section class="current" id="current">
+                    <div>
+                        <span class="header"></span>
+                    </div>
+                    <p></p>
+                    <p></p>
+                    <p></p>
+                    <p></p>
+                </section>
+                <section class="map-container">
+                    <div id="js-map" class="map"></div>
+                </section>
             </div>
-        </section>
-        <section>
-            
-        </section>
-    </div>
-    
-    <!-- <section>
-        <div class="map-container">
-            <div id="js-map" class="map"></div>
+            <section class="weekly">
+                <div class="cols" id="weekly">
+
+                </div>
+            </section>
         </div>
-    </section> -->
-    
+    </div>    
 </body>
 </html>
