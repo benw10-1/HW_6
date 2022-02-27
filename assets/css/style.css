@@ -1,44 +1,55 @@
 html {
     height: 100vh;
     width: 100vw;
+    overflow: hidden;
 }
 body {
     height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
+    font-family: 'Courier New', Courier, monospace;
 }
 header {
     height: 4em;
     width: 100%;
-    background-color: aqua;
+    background-color: blue;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,.3);
+    color: white;
+}
+
+header h1 {
+    font-size: 2em;
 }
 
 #search {
     width: 80%;
     height: 1.5em;
     padding-top: .5em;
-    padding-left: .25em;
-    /* padding-bottom: .25em; */
     font-size: 1em;
-    background-color: black;
-    color: wheat;
+    background-color: white;
+    color: black;
     overflow: hidden;
+    font-weight: bold;
 }
 
 .searches {
-    width: 50%;
+    width: 30%;
     text-align: center;
     height: 75%;
-    background-color: blue;
     margin: 0 30px;
+    overflow: auto;
 }
 
 .section-header {
     padding: 20px 0;
     display: flex;
     justify-content: center;
-    background-color: wheat;
+    background-color: blue;
 }
 
 .search-history {
@@ -46,16 +57,16 @@ header {
 }
 
 .map {
-    width: 300px;
+    width: 100%;
     height: 300px;
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
     padding: 10px;
     margin: 0 30px;
     background-color: white;
+    border: 2px solid blue;
 }
-.map-container {
-    height: fit-content;
-    width: fit-content;
+.shadow {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    border-radius: 10px;
 }
 
 .rows, .cols {
@@ -86,10 +97,15 @@ header {
 }
 
 .current {
-    width: 100%;
-    height: 320px;
+    width: 70ex;
+    height: fit-content;
     border: 2px solid blue;
     padding: 10px;
+    text-align: center;
+}
+
+.current p {
+    margin: .5em 0;
 }
 
 .header {
@@ -101,5 +117,82 @@ img {
     position: absolute;
     width: 1em;
     height: 1em;
-    transform: scale(1.5);
+    transform: scale(1.5) translateX(5px) translateY(-2px);
+}
+
+.searchHist {
+    font-size: 20px;
+    font-weight: bolder;
+    border-top: 2px solid blue;
+    padding: 30px;
+    text-align: center;
+    transition: all .5s ease;
+}
+
+.searchHist:hover {
+    color: white;
+    background-color: blue;
+    cursor: pointer;
+}
+
+.day {
+    border: 2px solid blue;
+    padding: 1em;
+    padding-right: calc(1em + 10px);
+    width: calc(fit-content + 20px);
+    text-align: center;
+}
+
+.day h1 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.day p {
+    margin: .5em 0;
+}
+
+.ol-popup {
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #cccccc;
+    bottom: 12px;
+    left: -50px;
+    text-align: center;
+    width: fit-content;
+    white-space: nowrap;
+}
+.ol-popup:after, .ol-popup:before {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+.ol-popup:after {
+    border-top-color: white;
+    border-width: 10px;
+    left: 48px;
+    margin-left: -10px;
+}
+.ol-popup:before {
+    border-top-color: #cccccc;
+    border-width: 11px;
+    left: 48px;
+    margin-left: -11px;
+}
+
+.ol-popup h1 {
+    font-size: larger;
+    font-weight: bold;
+    margin-bottom: .5em;
+}
+.ol-popup p {
+    margin-bottom: .5em;
 }

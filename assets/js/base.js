@@ -1,4 +1,4 @@
-var city, region_code, country, latitude, longitude, icons, zoom, map, source, view, vector, overlay, tileLayer, search, searches, mapEl, history, current, styler, weekly, objs
+var cont, popped, popCont, overlay, displayed, shown, loading, city, region_code, country, latitude, longitude, icons, zoom, map, source, view, vector, overlay, tileLayer, search, searches, mapEl, hist, current, weekly, objs
 
 const iconCodes = ["11d", "11n", "09d", "09n", "10d", "10n", "13d", "13n", "50d", "50n", "01d", "01n", "02d", "02n", "03d", "03n", "04d", "04n"]
 const api_key = "286593f8a4744e7b153b7c57a9a68833"
@@ -26,16 +26,48 @@ function loadEls() {
     search = document.getElementById("search")
     mapEl = document.getElementById("js-map")
     current = document.getElementById("current")
-    history = document.getElementById("search-history")
+    hist = document.getElementById("search-history")
     weekly = document.getElementById("weekly")
+    cont = document.getElementById("popup")
+    popCont = document.getElementById("popup-content")
+
+    displayed = new Set()
+    shown = new Set()
 
     search.addEventListener("keypress", event => {
-        if (event.key === "Enter") {
-            console.log(event)
+        if (event.key === "Enter" && !loading) {
             searchLocation(search.innerHTML)
             event.preventDefault()
         }
     })
+
+    searches = JSON.parse(localStorage.getItem("searches") ?? "{}")
+
+    for (const key in searches) {
+        updateSearchHistory(key, searches[key])
+    }
+}
+
+function popupInfo(pos, info) {
+    if (popped || !info) return
+    overlay.setPosition(pos)
+
+    cont.innerHTML = ""
+    console.log(info) 
+    
+    let h1 = document.createElement("h1")
+    h1.innerHTML = info.loc.split(",")[0]
+    cont.appendChild(h1)
+
+    let p = document.createElement("p")
+    p.innerHTML = "Weather: " + info.current.weather[0].main
+    cont.appendChild(p)
+
+    p = document.createElement("p")
+    p.innerHTML = "Temperature: " + info.current.temp + "°F"
+    cont.appendChild(p)
+
+    popped = true
 }
 
 function generateMap() {
@@ -53,6 +85,14 @@ function generateMap() {
         updateWhileAnimating: true,
         updateWhileInteracting: true
     })
+    overlay = new ol.Overlay({
+        element: cont,
+        autoPan: {
+            animation: {
+                duration: 250,
+            }
+        }
+    })
 
     map = new ol.Map({
         view: view,
@@ -60,23 +100,42 @@ function generateMap() {
             attribution : false,
             zoom : false,
         }),
+        overlays: [overlay],
         layers: [tileLayer, vector],
         target: 'js-map'
     })
 
     map.on("pointermove", event => {
         map.getViewport().style.cursor = ''
+        popped = false
+        overlay.setPosition(undefined)
+
         map.forEachFeatureAtPixel(map.getEventPixel(event.originalEvent), (feature, layer) => {
             map.getViewport().style.cursor = 'pointer'
+            let ext = feature.getGeometry().getExtent()
+            let coordinate = ol.extent.getCenter(ext)
+
+            popupInfo(coordinate, feature.get("info"))
         })
     })
     map.on("click", event => {
         map.forEachFeatureAtPixel(map.getEventPixel(event.originalEvent), (feature, layer) => {
-            searchLocation(feature.info)
+            searchLocation(feature.get("info").loc)
         })
     })
 
     return map
+}
+
+function getUV(uv) {
+    let color = "green"
+
+    if (uv > 3) color = "yellow"
+    if (uv > 5) color = "orange"
+    if (uv > 7) color = "red"
+    if (uv > 10) color = "violet"
+
+    return "border-radius:10px; color:white; background:{}; display:inline; padding: .2em .5em".replace("{}", color)
 }
 
 function displayWeather(data) {
@@ -85,33 +144,26 @@ function displayWeather(data) {
     // temp wind humidity, uv
     let children = current.children
 
-    children[0].children[0].innerHTML = moment.unix(current_.dt).format("M/D/YYYY")
+    children[0].children[0].innerHTML = data.loc.split(", ")[0]
 
-    // let icon = document.createElement("div")
-    // icon.style = `
-    //     background: url({0}) no-repeat;
-    //     width: 20px;
-    //     height: 20px;
-    //     margin-top: 6px;
-    //     position: relative;
-    //     z-index: 10;
-    // `.format(icons[current_.weather[0].icon])
-
-    children[1].innerHTML = current_.temp
-    children[2].innerHTML = current_.wind_speed
-    children[3].innerHTML = current_.humidity
-    children[4].innerHTML = current_.uvi
+    children[1].innerHTML = "Weather: " + current_.weather[0].main
+    children[2].innerHTML = "Temperature: " + current_.temp + "°F"
+    children[3].innerHTML = "Wind speed: " + current_.wind_speed + " m/h"
+    children[4].innerHTML = "Humidity: " + current_.humidity
+    children[5].innerHTML = "UV Index: <div style='{}'>".replace("{}", getUV(current_.uvi)) + current_.uvi + "</div>"
 
     weekly.innerHTML = ""
 
-    for (i=0; i < 5; i++) {
+    for (i=1; i < 6; i++) {
         let cur = daily[i]
 
         let container = document.createElement("div")
         container.classList.add("day")
+        container.classList.add("shadow")
 
         let h = document.createElement("h1")
         h.innerHTML = moment.unix(cur.dt).format("M/D/YYYY")
+        h.appendChild(objs[cur.weather[0].icon].cloneNode())
         container.appendChild(h)
 
         let dv = document.createElement("div")
@@ -127,36 +179,44 @@ function displayWeather(data) {
             res += cur.temp[prop]
             s += 1
         }
-        container.children[2].innerHTML = (res/s).toFixed(2)
-        container.children[3].innerHTML = cur.wind_speed
-        container.children[4].innerHTML = cur.humidity
+        container.children[2].innerHTML = "Temp.: " + (res/s).toFixed(2) + "°F"
+        container.children[3].innerHTML = "WS: " + cur.wind_speed + " m/h"
+        container.children[4].innerHTML = "Hum.: " + cur.humidity
 
         weekly.appendChild(container)
     }
-    children[0].children[0].appendChild(objs[current_.weather[0].icon])
+    children[0].children[0].appendChild(objs[current_.weather[0].icon].cloneNode())
 }
 
 function updateSearchHistory(location, data) {
-    // if (searches.hasOwnProperty(location)) return true
-}
+    if (shown.has(location)) return
+    searches[location] = data
+    localStorage.setItem("searches", JSON.stringify(searches))
 
-function changeStyle(style) {
-    console.log(style)
-    if (!styler) {
-        styler = document.createElement("style")
-        document.getElementsByTagName("head")[0].appendChild(styler)
-    }
+    let container = document.createElement("div")
+    container.loc = location
+    container.classList = "searchHist"
+    container.addEventListener("click", event => {
+        searchLocation(event.currentTarget.loc)
+    })
 
-    styler.innerHTML = style
+    let h1 = document.createElement("h1")
+    h1.innerHTML = data.loc
+    container.appendChild(h1)
+    hist.appendChild(container)
+    shown.add(location)
 }
 
 function searchLocation(location) {
+    if (loading) return
     location = location.trim()
     getLocationData(location).then(data => {
         let loc = data.display_name.split(",").slice(0, 3).join(",")
         getLocationData(data.lon, data.lat).then(data => {
+            data.loc = loc
             displayWeather(data)
-            if (!updateSearchHistory(loc, data)) addFeature(data.lon, data.lat, data.current.weather[0].icon, loc)
+            updateSearchHistory(loc, data)
+            if (!displayed.has(loc)) addFeature(data.lon, data.lat, data.current.weather[0].icon, data)
         })
         if (!data) return
         let box = data.boundingbox
@@ -165,12 +225,11 @@ function searchLocation(location) {
     })
 }
 
-function goToCoord(lon, lat, min, max, onDone = () => { }) {
-    if (map === undefined) {
-        return
-    }
+function goToCoord(lon, lat, min, max, onDone = () => {}) {
+    if (!map) return
 
     setInteractions(false)
+    loading = true
 
     setZoomLevel(min, max)
 
@@ -180,6 +239,7 @@ function goToCoord(lon, lat, min, max, onDone = () => { }) {
         duration: 2000
     }, finished => {
         setInteractions(true)
+        loading = false
         onDone()
     })
 }
@@ -187,9 +247,8 @@ function goToCoord(lon, lat, min, max, onDone = () => { }) {
 function addFeature(lon, lat, code, info) {
     let feature = new ol.Feature({
         geometry: new ol.geom.Point(ol.proj.fromLonLat([lon, lat])),
-        name: info
     })
-
+    feature.set("info", info)
     let colorStyle = new ol.style.Style({
         image: new ol.style.Icon({
             src: icons[code],
@@ -201,6 +260,7 @@ function addFeature(lon, lat, code, info) {
     feature.setStyle(colorStyle)
 
     source.addFeature(feature)
+    displayed.add(info)
 }
 
 function setInteractions(active) {
