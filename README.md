@@ -1,8 +1,8 @@
-# 06 Weather Dashboard
+# Weather Dashboard
 
 ## Description
 
-In this homework assignemnt I use Javascript to obtain weather information from a user searched location (which are saved in local storage), and display it on a map as well as on text elements. I do this by using the OpenLayers library for the map, IPAPI for the user's current location, OpenStreetMaps API for the location search feature, and OpenWeather API for the weather information.
+In this miniProject I use Javascript to obtain weather information from a user searched location (which are saved in local storage), and display it on a map as well as on text elements. I do this by using the OpenLayers library for the map, IPAPI for the user's current location, OpenStreetMaps API for the location search feature, and OpenWeather API for the weather information.
 
 ## Links
 
