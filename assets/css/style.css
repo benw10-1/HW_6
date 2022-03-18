@@ -196,3 +196,18 @@ img {
 .ol-popup p {
     margin-bottom: .5em;
 }
+.tooltip {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    opacity: 0;
+    transition: all 1;
+    z-index: 5;
+}
+.displayed {
+    display: block;
+    opacity: 1;
+}
+.hidden {
+    display: none;
+}

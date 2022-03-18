@@ -2,6 +2,26 @@ var cont, popped, popCont, overlay, displayed, shown, loading, city, region_code
 
 const iconCodes = ["11d", "11n", "09d", "09n", "10d", "10n", "13d", "13n", "50d", "50n", "01d", "01n", "02d", "02n", "03d", "03n", "04d", "04n"]
 const api_key = "286593f8a4744e7b153b7c57a9a68833"
+const DEFAULT = {
+    "ip": "208.67.222.222",
+    "city": "San Francisco",
+    "region": "California",
+    "region_code": "CA",
+    "country": "US",
+    "country_name": "United States",
+    "continent_code": "NA",
+    "in_eu": false,
+    "postal": "94107",
+    "latitude": 37.7697,
+    "longitude": -122.3933,
+    "timezone": "America/Los_Angeles",
+    "utc_offset": "-0800",
+    "country_calling_code": "+1",
+    "currency": "USD",
+    "languages": "en-US,es-US,haw,fr",
+    "asn": "AS36692",
+    "org": "OpenDNS, LLC"
+}
 
 String.prototype.format = function () {
     var args = arguments
@@ -20,6 +40,33 @@ function loadIcons() {
         icons[iconCodes[index]] = "https://openweathermap.org/img/wn/{0}@2x.png".format(iconCodes[index])
         objs[iconCodes[index]] = load
     }
+}
+
+function cleanHTML(html) {
+    var input = html
+    // 1. remove line breaks / Mso classes
+    var stringStripper = /(\|\\r| class=(")?Mso[a-zA-Z]+(")?)/g
+    var output = input.replace(stringStripper, '')
+    // 2. strip Word generated HTML comments
+    var commentSripper = new RegExp('<!--(.*?)-->','g')
+    var output = output.replace(commentSripper, '')
+    var tagStripper = new RegExp('<(/)*(meta|link|span|\\\\?xml:|st1:|o:|font)(.*?)>','gi')
+    // 3. remove tags leave content if any
+    output = output.replace(tagStripper, '')
+    // 4. Remove everything in between and including tags '<style(.)style(.)>'
+    var badTags = ['style', 'script','applet','embed','noframes','noscript']
+    
+    for (var i=0; i< badTags.length; i++) {
+      tagStripper = new RegExp('<'+badTags[i]+'.*?'+badTags[i]+'(.*?)>', 'gi')
+      output = output.replace(tagStripper, '')
+    }
+    // 5. remove attributes ' style="..."'
+    var badAttributes = ['style', 'start']
+    for (var i=0; i< badAttributes.length; i++) {
+      var attributeStripper = new RegExp(' ' + badAttributes[i] + '="(.*?)"','gi')
+      output = output.replace(attributeStripper, '')
+    }
+    return output
 }
 
 function loadEls() {
